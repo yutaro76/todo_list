@@ -137,7 +137,7 @@ export const App = () => {
   return (
     <div>
       <select
-        // defaultValue="all"
+        value={filter}
         onChange={(e) => handleSort(e.target.value as Filter)}
       >
         <option value="all">すべてのタスク</option>
