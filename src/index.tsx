@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, StrictMode } from "react";
+import { useState, StrictMode, useEffect } from "react";
 import { createRoot } from 'react-dom/client';
 import "./index.css";
 
@@ -47,9 +47,33 @@ type Todo = {
 type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
 export const App = () => {
-  const [text, setText] = useState('');
-  const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  const [filter, setFilter] = useState<Filter>('all');
+
+  const [text, setText] = useState(() => {
+    const storedText = localStorage.getItem('text');
+    return storedText ? JSON.parse(storedText) : '';
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('text', JSON.stringify(text));
+  }, [text]);
+
+  const [todos, setTodos] = useState<Todo[]>(() => {;
+    const storedTodos = localStorage.getItem('todos');
+    return storedTodos ? JSON.parse(storedTodos) : initialTodos;
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
+  const [filter, setFilter] = useState<Filter>(() => {
+    const storedFilter = localStorage.getItem('filter');
+    return storedFilter ? (JSON.parse(storedFilter) as Filter) : 'all';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('filter', JSON.stringify(filter));
+  }, [filter]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
@@ -113,7 +137,7 @@ export const App = () => {
   return (
     <div>
       <select
-        defaultValue="all"
+        // defaultValue="all"
         onChange={(e) => handleSort(e.target.value as Filter)}
       >
         <option value="all">すべてのタスク</option>
